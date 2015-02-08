@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+/*set the axis line color, dot stroke, font size, and font position*/
+body {
+  font: 15px sans-serif;
+}
+
+.name{
+  position: relative;
+  text-align: center;
+  font-weight: bold;
+}
+
+.title {
+  position: relative;
+  text-align: center;
+  font-size: 25px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: #000;
+}
+
+#filter {
+  position: absolute;
+}
+
+#mark {
+  padding-left: 150px;
+  position: inherit;
+}
+
+#xAX {
+position: fixed;
+top: 620px;
+bottom: 105px;
+left: 300px;
+right: 0px;
+}
+
+#label {
+position: fixed;
+top: 599px;
+bottom: 125px;
+left: 300px;
+right: 0px;
+}
+
+#yAX {
+position: fixed;
+top: 620px;
+bottom: 105px;
+left: 430px;
+right: 0px;
+}
+
+#label2 {
+position: fixed;
+top: 599px;
+bottom: 125px;
+left: 430px;
+right: 0px;
+}
+
+</style>
+
+<body>
+
+<!-- add title to graph -->
+<p class='title'>Iris Flower Dimensions</p>
+
+<!-- load up the minified d3 js file-->
+<script src="d3.min.js"></script>
+
+<script>
+// set the graph size
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+//set x to be a linear scale with range of 0 to  
+var x = d3.scale.linear()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+//setup the fill color
+var color = d3.scale.category10();
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+//add the graph to the body of index.html
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// load the data from the iris.csv file & convert from string to numbers
+d3.csv("iris.csv", function(error, data) {
+  data.forEach(function(d) {
+    d.petalLength = +d.petalLength;
+    d.petalWidth = +d.petalWidth;
+    d.sepalLength = +d.sepalLength;
+    d.sepalWidth = +d.sepalWidth;
+  });
+
+  x.domain(d3.extent(data, function(d) { return d.petalWidth; })).nice();
+  y.domain(d3.extent(data, function(d) { return d.petalLength; })).nice();
+
+  //draw the x axis
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Petal Width (cm)");
+
+  //draw the y axis    
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Petal Length (cm)")
+
+  //draw the dots
+ var circles = svg.selectAll(".dot")
+      .data(data)
+    .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 3.5)
+      .attr("cx", function(d) { return x(d.petalWidth); })
+      .attr("cy", function(d) { return y(d.petalLength); })
+      .style("fill", function(d) { return color(d.species); });
+
+  //draw the legend
+  var legend = svg.selectAll(".legend")
+      .data(color.domain())
+      .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  //draw the colored rectangles on the legend
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  //draw the names of the species of flower on the legend
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+
+  //filter the species
+  d3.selectAll("[name=v]").on("change", function() {
+      var selected = this.value;
+      display = this.checked ? "inline" : "none";
+
+
+  svg.selectAll(".dot")
+      .filter(function(d) {return selected == d.species;})
+      .attr("display", display);
+      });
+
+  //control the size of the dot
+  d3.selectAll("[name=sepal]").on("change", function(d) {
+     radius = this.value;
+     console.log(d.sepalWidth)
+     var sW = d.sepalWidth;
+     var sL = d.sepalLength;
+
+  svg.selectAll(".dot")
+     console.log(radius);
+      console.log(d.sepalWidth)
+     circles.attr("r", radius);
+     });
+
+});
+
+</script>
+<br><br>
+
+
+  <div id="filter">
+    <b>Species Filter:</b>
+        <br>
+    <input name='v' value="Iris-setosa" type="checkbox" checked>Iris-setosa
+    </input>
+        <br>
+    <input name="v" value="Iris-versicolor" type="checkbox" checked >Iris-versicolor
+    </input>
+        <br>
+    <input name="v" value="Iris-virginica" type="checkbox" checked >Iris-virginica
+    </input>
+  </div>
+
+
+  <form id="mark">
+    <b>Size of Mark:</b>
+    <div><input type="radio" name="sepal" value='sW'>Sepal Width</div>
+    <div><input type="radio" name="sepal" value="sL">Sepal Length</div>
+  </form>
+
+<div id="label"><b>x-Axis:</b></div>
+  <select id="xAX">
+        <option value ="x1">petalWidth</option>
+        <option value ="x2">petalLength</option>
+        <option value ="x3">sepalLength</option>
+        <option value ="x4">sepalWidth</option>
+  </select>
+
+<div id="label2"><b>y-Axis:</b></div>
+  <select id="yAX">
+        <option value ="y1">petalLength</option>
+        <option value ="y2">petalWidth</option>
+        <option value ="y3">sepalLength</option>
+        <option value ="y4">sepalWidth</option>
+  </select>  
+
+  <br>
+  <p class="name">Donald Zhong - 301167293</p>
+</body>
