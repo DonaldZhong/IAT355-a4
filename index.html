@@ -9,6 +9,7 @@ body {
 
 .name{
   position: relative;
+  top: 90px;
   text-align: center;
   font-weight: bold;
 }
@@ -40,31 +41,28 @@ body {
 }
 
 #xAX {
-position: fixed;
-top: 620px;
-bottom: 105px;
-left: 300px;
-right: 0px;
+  left: 295px;
+  bottom: 230px;
+  position: absolute;
+}
+
+#yAX {
+position: absolute;
+bottom: 230px;
+left: 430px;
+
 }
 
 #label {
-position: fixed;
+position: absolute;
 top: 599px;
 bottom: 125px;
 left: 300px;
 right: 0px;
 }
 
-#yAX {
-position: fixed;
-top: 620px;
-bottom: 105px;
-left: 430px;
-right: 0px;
-}
-
 #label2 {
-position: fixed;
+position: absolute;
 top: 599px;
 bottom: 125px;
 left: 430px;
@@ -200,7 +198,6 @@ d3.csv("iris.csv", function(error, data) {
 
   svg.selectAll(".dot")
      console.log(radius);
-      console.log(d.sepalWidth)
      circles.attr("r", radius);
      });
 
