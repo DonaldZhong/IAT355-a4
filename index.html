@@ -194,24 +194,45 @@ d3.csv("iris.csv", function(error, data) {
   //control the size of the dot
   d3.selectAll("[name=sepal]").on("change", function(d) {
      radius = this.value;
+     if (radius == "sepalLength") {
+        radius = d.sepalLength;
+     } else {
+        radius = d.sepalWidth;
+     }
      
 
   svg.selectAll(".dot")
-     console.log(radius);
-     circles.attr("r", radius);
+    console.log(radius);
+    circles.attr("r", function(d) {radius == d.sepalLength;})
      });
 
 
   //control the axis
   d3.select("[name=xAX]").on("change", function(){
     xAxy = this.value;
-    console.log(xAxy)
-  })
+    console.log(xAxy);
+    })
+
+    .selectAll("circle")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("value", function(d){return d})
+    .text(function(d){return d;});
+
 
   d3.select("[name=yAX]").on("change", function(){
     yAxy = this.value;
-    console.log(yAxy)
-  })
+    console.log(yAxy);
+    })
+
+    .selectAll("circle")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("value", function(d){return d})
+    .text(function(d){return d;});
+
 
 });
 
