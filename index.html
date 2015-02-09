@@ -40,16 +40,16 @@ body {
   position: inherit;
 }
 
-#xAX {
-  left: 295px;
-  bottom: 230px;
-  position: absolute;
+#xAXs {
+  position: relative;
+  left: 290px;
+  bottom: 30px;
 }
 
-#yAX {
-position: absolute;
-bottom: 230px;
-left: 430px;
+#yAXs {
+position: relative;
+bottom: 30px;
+left: 315px;
 
 }
 
@@ -178,6 +178,7 @@ d3.csv("iris.csv", function(error, data) {
       .style("text-anchor", "end")
       .text(function(d) { return d; });
 
+
   //filter the species
   d3.selectAll("[name=v]").on("change", function() {
       var selected = this.value;
@@ -189,17 +190,28 @@ d3.csv("iris.csv", function(error, data) {
       .attr("display", display);
       });
 
+
   //control the size of the dot
   d3.selectAll("[name=sepal]").on("change", function(d) {
      radius = this.value;
-     console.log(d.sepalWidth)
-     var sW = d.sepalWidth;
-     var sL = d.sepalLength;
+     
 
   svg.selectAll(".dot")
      console.log(radius);
      circles.attr("r", radius);
      });
+
+
+  //control the axis
+  d3.select("[name=xAX]").on("change", function(){
+    xAxy = this.value;
+    console.log(xAxy)
+  })
+
+  d3.select("[name=yAX]").on("change", function(){
+    yAxy = this.value;
+    console.log(yAxy)
+  })
 
 });
 
@@ -223,24 +235,24 @@ d3.csv("iris.csv", function(error, data) {
 
   <form id="mark">
     <b>Size of Mark:</b>
-    <div><input type="radio" name="sepal" value='sW'>Sepal Width</div>
-    <div><input type="radio" name="sepal" value="sL">Sepal Length</div>
+    <div><input type="radio" name="sepal" value='sepalWidth'>Sepal Width</div>
+    <div><input type="radio" name="sepal" value="sepalLength">Sepal Length</div>
   </form>
 
 <div id="label"><b>x-Axis:</b></div>
-  <select id="xAX">
-        <option value ="x1">petalWidth</option>
-        <option value ="x2">petalLength</option>
-        <option value ="x3">sepalLength</option>
-        <option value ="x4">sepalWidth</option>
+  <select name="xAX" id="xAXs">
+        <option value ="petalWidth">petalWidth</option>
+        <option value ="petalLength">petalLength</option>
+        <option value ="sepalLength">sepalLength</option>
+        <option value ="sepalWidth">sepalWidth</option>
   </select>
 
 <div id="label2"><b>y-Axis:</b></div>
-  <select id="yAX">
-        <option value ="y1">petalLength</option>
-        <option value ="y2">petalWidth</option>
-        <option value ="y3">sepalLength</option>
-        <option value ="y4">sepalWidth</option>
+  <select name="yAX" id="yAXs">
+        <option value ="petalLength">petalLength</option>
+        <option value ="petalWidth">petalWidth</option>
+        <option value ="sepalLength">sepalLength</option>
+        <option value ="sepalWidth">sepalWidth</option>
   </select>  
 
   <br>
