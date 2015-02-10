@@ -73,27 +73,31 @@ right: 0px;
 
 <body>
 
-<!-- add title to graph -->
-<p class='title'>Iris Flower Dimensions</p>
 
-<!-- load up the minified d3 js file-->
-<script src="d3.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
 
 <script>
-// set the graph size
+
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-//set x to be a linear scale with range of 0 to  
+  
 var x = d3.scale.linear()
     .range([0, width]);
 
 var y = d3.scale.linear()
     .range([height, 0]);
 
-//setup the fill color
+
 var color = d3.scale.category10();
+
+var axisNames = { 
+                    petalWidth: 'Petal Width', 
+                    petalLength: 'Petal Length', 
+                    sepalWidth: 'Sepal Width', 
+                    sepalLength: 'Sepal Length' 
+                };
 
 var xAxis = d3.svg.axis()
     .scale(x)
@@ -103,14 +107,14 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
 
-//add the graph to the body of index.html
+
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// load the data from the iris.csv file & convert from string to numbers
+
 d3.csv("iris.csv", function(error, data) {
   data.forEach(function(d) {
     d.petalLength = +d.petalLength;
@@ -122,7 +126,6 @@ d3.csv("iris.csv", function(error, data) {
   x.domain(d3.extent(data, function(d) { return d.petalWidth; })).nice();
   y.domain(d3.extent(data, function(d) { return d.petalLength; })).nice();
 
-  //draw the x axis
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
@@ -134,7 +137,6 @@ d3.csv("iris.csv", function(error, data) {
       .style("text-anchor", "end")
       .text("Petal Width (cm)");
 
-  //draw the y axis    
   svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
@@ -146,7 +148,6 @@ d3.csv("iris.csv", function(error, data) {
       .style("text-anchor", "end")
       .text("Petal Length (cm)")
 
-  //draw the dots
  var circles = svg.selectAll(".dot")
       .data(data)
     .enter().append("circle")
@@ -156,21 +157,21 @@ d3.csv("iris.csv", function(error, data) {
       .attr("cy", function(d) { return y(d.petalLength); })
       .style("fill", function(d) { return color(d.species); });
 
-  //draw the legend
+
   var legend = svg.selectAll(".legend")
       .data(color.domain())
       .enter().append("g")
       .attr("class", "legend")
       .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-  //draw the colored rectangles on the legend
+
   legend.append("rect")
       .attr("x", width - 18)
       .attr("width", 18)
       .attr("height", 18)
       .style("fill", color);
 
-  //draw the names of the species of flower on the legend
+
   legend.append("text")
       .attr("x", width - 24)
       .attr("y", 9)
@@ -179,7 +180,7 @@ d3.csv("iris.csv", function(error, data) {
       .text(function(d) { return d; });
 
 
-  //filter the species
+
   d3.selectAll("[name=v]").on("change", function() {
       var selected = this.value;
       display = this.checked ? "inline" : "none";
@@ -191,48 +192,40 @@ d3.csv("iris.csv", function(error, data) {
       });
 
 
-  //control the size of the dot
+
   d3.selectAll("[name=sepal]").on("change", function(d) {
      radius = this.value;
-     if (radius == "sepalLength") {
-        radius = d.sepalLength;
-     } else {
-        radius = d.sepalWidth;
-     }
-     
 
-  svg.selectAll(".dot")
-    console.log(radius);
-    circles.attr("r", function(d) {radius == d.sepalLength;})
-     });
+     svg.selectAll(".dot")
+     console.log(radius);
+     circles.attr("r", function(d) { return d[radius]; });
+  });
 
 
-  //control the axis
+
   d3.select("[name=xAX]").on("change", function(){
     xAxy = this.value;
-    console.log(xAxy);
-    })
+    console.log(xAxy)
+    x.domain(d3.extent(data, function(d) { return d[xAxy]; })).nice();
 
-    .selectAll("circle")
-    .data(data)
-    .enter()
-    .append("circle")
-    .attr("value", function(d){return d})
-    .text(function(d){return d;});
+    svg.select(".x.axis").transition().call(xAxis);
 
+    svg.selectAll(".dot").transition().attr("cx", function(d) { 
+        return x(d[xAxy]);
+    });
+    svg.selectAll(".x.axis").selectAll("text.label").text(axisNames[xAxy] + " (cm)");
+  });
 
   d3.select("[name=yAX]").on("change", function(){
     yAxy = this.value;
-    console.log(yAxy);
-    })
-
-    .selectAll("circle")
-    .data(data)
-    .enter()
-    .append("circle")
-    .attr("value", function(d){return d})
-    .text(function(d){return d;});
-
+    console.log(yAxy)
+    y.domain(d3.extent(data, function(d) { return d[yAxy]; })).nice();
+    svg.select(".y.axis").transition().call(yAxis);
+    svg.selectAll(".dot").transition().attr("cy", function(d) { 
+        return y(d[yAxy]);
+    });
+    svg.selectAll(".y.axis").selectAll("text.label").text(axisNames[yAxy] + " (cm)");
+  });
 
 });
 
@@ -277,5 +270,4 @@ d3.csv("iris.csv", function(error, data) {
   </select>  
 
   <br>
-  <p class="name">Donald Zhong - 301167293</p>
 </body>
